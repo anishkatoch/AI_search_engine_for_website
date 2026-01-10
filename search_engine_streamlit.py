@@ -6,7 +6,7 @@ from streamlit_searchbox import st_searchbox
 from sentence_transformers import SentenceTransformer
 
 # ================== CONFIG ==================
-PRODUCT_CSV = r"C:\Users\anees\Downloads\amazon_products.csv"   # update path if needed
+PRODUCT_CSV = r"https://raw.githubusercontent.com/anishkatoch/AI_search_engine_for_webiste/main/amazon_products.csv"
 TOP_K = 20
 EMBEDDINGS_FILE = "product_embeddings.npy"
 MODEL_NAME = "all-MiniLM-L6-v2"
@@ -122,4 +122,5 @@ selected = st_searchbox(
 
 if selected:
     st.success(f"Selected: {selected}")
+
 
