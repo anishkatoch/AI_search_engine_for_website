@@ -19,7 +19,7 @@ else:
     hf_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # ================== CONFIG ==================
-PRODUCT_CSV = r"C:\Users\anees\Downloads\amazon_products.csv"
+PRODUCT_CSV = r"https://raw.githubusercontent.com/anishkatoch/AI_search_engine_for_webiste/main/amazon_products.csv"
 TOP_K = 80
 EMBEDDINGS_FILE = "product_embeddings.npy"
 OPENAI_EMBED_MODEL = "text-embedding-3-large"
@@ -223,3 +223,4 @@ if __name__ == "__main__":
         port=8024,
         reload=True
     )
+
