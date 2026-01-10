@@ -1,13 +1,13 @@
 fastapi
 uvicorn[standard]
-
+streamlit-searchbox
 pandas
 numpy
-
 sentence-transformers
 torch
-
 python-dotenv
-
+streamlit
+torch
 # Optional (only used if OPEN_API_KEY is set)
 openai
+
