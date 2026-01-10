@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+
+pandas
+numpy
+
+sentence-transformers
+torch
+
+python-dotenv
+
+# Optional (only used if OPEN_API_KEY is set)
+openai
