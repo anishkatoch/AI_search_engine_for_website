@@ -85,6 +85,6 @@ Popularity Boost
 (total_reviews)
     |
     v
-Streamlit Autocomplete UI```
+Streamlit Autocomplete UI
 
 
