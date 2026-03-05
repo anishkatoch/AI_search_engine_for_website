@@ -60,7 +60,7 @@ df = load_data()
 
 # ================== LOAD / BUILD EMBEDDINGS ==================
 @st.cache_resource
-def load_embeddings(df):
+def load_embeddings(_df):
     texts = df["combined"].tolist()
 
     if os.path.exists(EMBEDDINGS_FILE):
@@ -122,5 +122,6 @@ selected = st_searchbox(
 
 if selected:
     st.success(f"Selected: {selected}")
+
 
 
