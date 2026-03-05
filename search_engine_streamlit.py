@@ -11,6 +11,21 @@ TOP_K = 20
 EMBEDDINGS_FILE = "product_embeddings.npy"
 MODEL_NAME = "all-MiniLM-L6-v2"
 
+# ================== STREAMLIT UI ==================
+st.set_page_config(
+    page_title="AI Product Search",
+    page_icon="🔍",
+    layout="centered"
+)
+
+st.markdown(
+    """
+    <h2 style="text-align:center;">🔍 AI Product Search</h2>
+    <p style="text-align:center;">Type to search products using semantic similarity</p>
+    """,
+    unsafe_allow_html=True
+)
+
 # ================== LOAD MODEL ==================
 @st.cache_resource
 def load_model():
@@ -96,20 +111,7 @@ def search_products(query: str):
     order = np.lexsort((-reviews, -sims))[:TOP_K]
     return df.loc[order, "product_title"].tolist()
 
-# ================== STREAMLIT UI ==================
-st.set_page_config(
-    page_title="AI Product Search",
-    page_icon="🔍",
-    layout="centered"
-)
 
-st.markdown(
-    """
-    <h2 style="text-align:center;">🔍 AI Product Search</h2>
-    <p style="text-align:center;">Type to search products using semantic similarity</p>
-    """,
-    unsafe_allow_html=True
-)
 
 def search_callback(query):
     return search_products(query)
@@ -122,6 +124,7 @@ selected = st_searchbox(
 
 if selected:
     st.success(f"Selected: {selected}")
+
 
 
 
