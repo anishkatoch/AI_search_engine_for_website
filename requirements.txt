@@ -4,9 +4,8 @@ streamlit-searchbox
 pandas
 numpy
 sentence-transformers
-torch
+# torch
 python-dotenv
 streamlit
 altair==4.2.2
-# Optional (only used if OPEN_API_KEY is set)
 openai
