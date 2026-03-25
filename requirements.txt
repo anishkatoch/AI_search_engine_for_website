@@ -4,7 +4,7 @@ streamlit-searchbox
 pandas
 numpy
 sentence-transformers
-# torch
+#torch
 python-dotenv
 streamlit
 altair==4.2.2
