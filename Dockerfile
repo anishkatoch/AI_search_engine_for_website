@@ -35,6 +35,12 @@ COPY --from=frontend /frontend/dist ./frontend/dist
 
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Write the embeddings cache to a guaranteed-writable path. On hosts that run the
+# container as a non-root user (e.g. Hugging Face Spaces), /app may be read-only,
+# which would break the cache write on first boot. /tmp is always writable.
+# Override with a mounted volume / persistent storage for cross-restart caching.
+ENV EMBEDDINGS_FILE=/tmp/product_embeddings.npy
+
 EXPOSE 8005
 
 # One process serves the React UI at / and the API at /api/*.
