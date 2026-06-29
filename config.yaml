@@ -1,0 +1,38 @@
+# ============================================================================
+# Non-secret application configuration.
+# Secrets (API keys) live in .env  --  NEVER put keys here.
+# Any value below can be overridden by an environment variable of the same
+# name in UPPER_CASE (e.g. PORT, TOP_K, SIMILARITY_THRESHOLD).
+# ============================================================================
+
+app:
+  host: 0.0.0.0
+  port: 8005
+
+data:
+  product_csv: amazon_products.csv          # local path or http(s) URL
+  embeddings_file: product_embeddings.npy   # cached vectors
+
+models:
+  # Local, free embedding model (used when no OpenAI key is set in .env).
+  huggingface: all-MiniLM-L6-v2
+  # Cloud embedding model (used when OPEN_API_KEY is set in .env).
+  openai_embedding: text-embedding-3-large
+
+search:
+  top_k: 40                  # max total ranked results kept (across all pages)
+  similarity_threshold: 0.4  # only show products with cosine similarity > this
+  results_per_page: 10       # pagination page size
+  hybrid:
+    # Final score = semantic_weight * cosine + keyword_weight * keyword_match
+    semantic_weight: 0.7
+    keyword_weight: 0.3
+
+recommend:
+  similar_count: 5       # "You may also like" — item-to-item neighbors
+  category_count: 5      # "More from this category"
+  trending_count: 10   # homepage / empty-state trending row
+  category_boost: 0.05   # nudge same-category items up in "similar" ranking
+
+upload:
+  max_rows: 10000        # cap rows from an uploaded file (embedding cost guard)

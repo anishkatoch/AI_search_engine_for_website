@@ -1,0 +1,27 @@
+# Version control / IDE
+.git
+.gitignore
+.devcontainer
+.vscode
+
+# Python caches / virtualenvs
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# Frontend (node_modules reinstalled in the build stage; dist rebuilt)
+frontend/node_modules/
+frontend/dist/
+
+# Generated artifacts (rebuilt at runtime)
+product_embeddings.npy
+
+# Local env / secrets
+.env
+*.env
+
+# Docs
+*.md

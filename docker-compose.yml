@@ -1,0 +1,25 @@
+# One command runs everything (React UI + FastAPI), connected on one origin:
+#
+#   docker compose up --build
+#
+# Open http://localhost:8005  -> the search UI
+#       http://localhost:8005/docs -> the API docs
+#
+# The generated product_embeddings.npy is cached in a named volume so it is
+# only computed once across restarts.
+
+services:
+  app:
+    build: .
+    image: ai-search-engine
+    ports:
+      - "8005:8005"
+    environment:
+      # Optional: set OPEN_API_KEY to use OpenAI embeddings instead of local HF.
+      - OPEN_API_KEY=${OPEN_API_KEY:-}
+      - EMBEDDINGS_FILE=/data/product_embeddings.npy
+    volumes:
+      - embeddings:/data
+
+volumes:
+  embeddings:

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtualenv (uv)
+.venv/
+venv/
+
+# Generated embeddings cache
+product_embeddings.npy
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Environment / secrets
+.env
+
+# OS / editor
+.DS_Store

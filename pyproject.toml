@@ -1,0 +1,31 @@
+[project]
+name = "ai-search-engine"
+version = "1.0.0"
+description = "AI-powered semantic product search engine (FastAPI backend + Streamlit UI)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pandas",
+    "numpy",
+    "sentence-transformers",
+    "openai",
+    "python-dotenv",
+    "pyyaml",
+    "python-multipart",
+    "openpyxl",
+    "xlrd",
+    "sqlalchemy",
+    "pymysql",
+    "psycopg2-binary",
+    "pymssql",
+    "snowflake-sqlalchemy",
+]
+
+# This project is a set of runnable scripts (an application), not an importable
+# library, so uv should not try to build/install it as a package — it only
+# manages and locks the dependencies above.
+[tool.uv]
+package = false
