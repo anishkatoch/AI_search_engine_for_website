@@ -9,7 +9,7 @@ pinned: false
 ---
 
 # AI_search_engine_for_website
-An AI-powered product search backend that uses vector embeddings for semantic retrieval and hybrid ranking (similarity + review count). The engine reads from CSV data, supports Hugging Face E5 embeddings, and provides a REST-style search interface for downstream applications.
+An AI-powered product search backend that uses vector embeddings for semantic retrieval and hybrid ranking (similarity + review count). The engine reads from CSV data, embeds it with a Hugging Face Sentence Transformer (`all-MiniLM-L6-v2`, with optional OpenAI embeddings), and provides a REST-style search interface for downstream applications.
 
 
 # 🔍 AI Semantic Product Search Engine  
@@ -112,14 +112,16 @@ React Search UI  (served at /)
 
 ```text
 app/                 FastAPI backend (serves the React build + /api/*)
-  main.py            app entrypoint -> app.main:app
-  search.py          embeddings + semantic ranking
-  config.py          env-driven configuration
-  schemas.py         API response models
+  main.py            app entrypoint -> app.main:app  (API routes)
+  search.py          embeddings + semantic / hybrid ranking
+  sql_source.py      read-only SQL connector ("Connect SQL" feature)
+  config.py          env- + config.yaml-driven configuration
+  schemas.py         API request / response models
 frontend/            React (Vite) single-page app
   src/App.jsx        the search UI
   dist/              built static files served by FastAPI (generated)
 amazon_products.csv  product catalog
+config.yaml          non-secret settings (models, thresholds, paging)
 pyproject.toml       Python deps  (locked in uv.lock)
 Dockerfile           multi-stage: builds the UI, then serves everything
 ```
@@ -182,7 +184,27 @@ only computed once across restarts.
 
 ---
 
-## 7. Deploy on AWS (EC2)
+## 7. Deploy
+
+### 7.1 Hugging Face Spaces
+
+This repo is configured to run as a **Docker Space** — the config lives in the
+YAML frontmatter at the top of this README (`sdk: docker`, `app_port: 8005`).
+Push the repo to your Space and HF builds the Dockerfile automatically:
+
+```bash
+git push https://<user>:<HF_TOKEN>@huggingface.co/spaces/<user>/<space> main
+```
+
+> ⚠️ **Writable embeddings cache.** HF runs the container as a non-root user, so
+> the default `product_embeddings.npy` path may not be writable on boot. Point it
+> at a writable location with `EMBEDDINGS_FILE=/tmp/product_embeddings.npy` (set
+> it under **Space → Settings → Variables**, or as an `ENV` in the Dockerfile).
+>
+> 🔑 Add `OPEN_API_KEY` as a **Secret** (not a Variable) only if you want OpenAI
+> embeddings; otherwise the local `all-MiniLM-L6-v2` model is used.
+
+### 7.2 AWS (EC2)
 
 On a fresh Ubuntu / Amazon Linux EC2 instance:
 
@@ -296,7 +318,9 @@ Notes (both paths):
 | `GET`  | `/api/trending?limit=N`       | Most-reviewed (or first N) items             |
 | `GET`  | `/api/product/{sku}`          | Item + "similar" + "category" recommendations |
 | `GET`  | `/api/dataset`                | Active dataset info (source, columns, …)     |
+| `GET`  | `/api/dataset/download`       | Download the active dataset as CSV           |
 | `POST` | `/api/upload`                 | Upload a CSV/XLS/XLSX → returns its columns  |
+| `GET`  | `/api/upload/{id}/download`   | Download an uploaded/queried dataset as CSV  |
 | `POST` | `/api/sql/query`              | Run a read-only SQL query → returns its columns |
 | `POST` | `/api/upload/{id}/build`      | Build the index from chosen search columns   |
 | `POST` | `/api/dataset/reset`          | Restore the default Amazon dataset           |
@@ -324,16 +348,16 @@ Configuration is split in two:
 | `config.yaml` | `models.openai_embedding`            | `text-embedding-3-large` | OpenAI embedding model                               |
 | `config.yaml` | `data.product_csv`                   | `amazon_products.csv`    | Catalog source (local path or URL)                   |
 | `config.yaml` | `data.embeddings_file`               | `product_embeddings.npy` | Cached vectors file                                  |
-| `config.yaml` | `search.top_k`                       | `80`                     | Max ranked results kept (all pages)                  |
+| `config.yaml` | `search.top_k`                       | `40`                     | Max ranked results kept (all pages)                  |
 | `config.yaml` | `search.similarity_threshold`        | `0.4`                    | Minimum cosine similarity to show a product          |
 | `config.yaml` | `search.results_per_page`            | `10`                     | Pagination page size                                 |
 | `config.yaml` | `search.hybrid.semantic_weight`      | `0.7`                    | Weight of semantic similarity in the hybrid score    |
 | `config.yaml` | `search.hybrid.keyword_weight`       | `0.3`                    | Weight of keyword match in the hybrid score          |
 | `config.yaml` | `recommend.similar_count`            | `5`                      | "You may also like" item count                       |
 | `config.yaml` | `recommend.category_count`           | `5`                      | "More from this category" item count                 |
-| `config.yaml` | `recommend.trending_count`           | `12`                     | Trending row size                                    |
+| `config.yaml` | `recommend.trending_count`           | `10`                     | Trending row size                                    |
 | `config.yaml` | `recommend.category_boost`           | `0.05`                   | Same-category nudge in "similar" ranking             |
-| `config.yaml` | `upload.max_rows`                    | `20000`                  | Max rows kept from an uploaded file                  |
+| `config.yaml` | `upload.max_rows`                    | `10000`                  | Max rows kept from an uploaded file                  |
 
 > ⚠️ If you change the catalog or the embedding model, delete
 > `product_embeddings.npy` so the vectors are rebuilt.
